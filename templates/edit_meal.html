@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Meal - Calorie Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-edit text-primary me-2"></i>
+            Edit Meal
+        </h1>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-utensils me-2"></i>
+                    Update Meal Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="editMealForm">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="food_name" class="form-label">
+                                <i class="fas fa-apple-alt me-1"></i>Food Name *
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="food_name" 
+                                   name="food_name" 
+                                   value="{{ meal.food_name }}"
+                                   required 
+                                   placeholder="e.g., Grilled Chicken Breast">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="calories" class="form-label">
+                                <i class="fas fa-fire me-1"></i>Calories *
+                            </label>
+                            <div class="input-group">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="calories" 
+                                       name="calories" 
+                                       value="{{ meal.calories }}"
+                                       required 
+                                       min="0" 
+                                       step="0.1" 
+                                       placeholder="0">
+                                <span class="input-group-text">kcal</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="protein" class="form-label">
+                                <i class="fas fa-dumbbell me-1"></i>Protein *
+                            </label>
+                            <div class="input-group">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="protein" 
+                                       name="protein" 
+                                       value="{{ meal.protein }}"
+                                       required 
+                                       min="0" 
+                                       step="0.1" 
+                                       placeholder="0">
+                                <span class="input-group-text">g</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="carbs" class="form-label">
+                                <i class="fas fa-bread-slice me-1"></i>Carbohydrates *
+                            </label>
+                            <div class="input-group">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="carbs" 
+                                       name="carbs" 
+                                       value="{{ meal.carbs }}"
+                                       required 
+                                       min="0" 
+                                       step="0.1" 
+                                       placeholder="0">
+                                <span class="input-group-text">g</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fats" class="form-label">
+                                <i class="fas fa-cheese me-1"></i>Fats *
+                            </label>
+                            <div class="input-group">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="fats" 
+                                       name="fats" 
+                                       value="{{ meal.fats }}"
+                                       required 
+                                       min="0" 
+                                       step="0.1" 
+                                       placeholder="0">
+                                <span class="input-group-text">g</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">
+                                <i class="fas fa-calendar me-1"></i>Date *
+                            </label>
+                            <input type="date" 
+                                   class="form-control" 
+                                   id="date" 
+                                   name="date" 
+                                   value="{{ meal.date }}"
+                                   required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="meal_type" class="form-label">
+                                <i class="fas fa-clock me-1"></i>Meal Type *
+                            </label>
+                            <select class="form-select" id="meal_type" name="meal_type" required>
+                                <option value="">Select meal type</option>
+                                <option value="Breakfast" {% if meal.meal_type == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+                                <option value="Lunch" {% if meal.meal_type == 'Lunch' %}selected{% endif %}>Lunch</option>
+                                <option value="Dinner" {% if meal.meal_type == 'Dinner' %}selected{% endif %}>Dinner</option>
+                                <option value="Snack" {% if meal.meal_type == 'Snack' %}selected{% endif %}>Snack</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="{{ url_for('meals') }}" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Update Meal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Meal Summary -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Current Meal Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-primary">{{ meal.calories }}</h4>
+                            <small class="text-muted">Calories</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-success">{{ meal.protein }}g</h4>
+                            <small class="text-muted">Protein</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-warning">{{ meal.carbs }}g</h4>
+                            <small class="text-muted">Carbs</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <h4 class="text-info">{{ meal.fats }}g</h4>
+                            <small class="text-muted">Fats</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" 
+                                 role="progressbar" 
+                                 style="width: {{ (meal.protein|float * 4 / meal.calories|float * 100)|round(1) }}%">
+                                Protein: {{ (meal.protein|float * 4 / meal.calories|float * 100)|round(1) }}%
+                            </div>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-warning" 
+                                 role="progressbar" 
+                                 style="width: {{ (meal.carbs|float * 4 / meal.calories|float * 100)|round(1) }}%">
+                                Carbs: {{ (meal.carbs|float * 4 / meal.calories|float * 100)|round(1) }}%
+                            </div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" 
+                                 role="progressbar" 
+                                 style="width: {{ (meal.fats|float * 9 / meal.calories|float * 100)|round(1) }}%">
+                                Fats: {{ (meal.fats|float * 9 / meal.calories|float * 100)|round(1) }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.getElementById('editMealForm');
+    form.addEventListener('submit', function(e) {
+        const calories = parseFloat(document.getElementById('calories').value);
+        const protein = parseFloat(document.getElementById('protein').value);
+        const carbs = parseFloat(document.getElementById('carbs').value);
+        const fats = parseFloat(document.getElementById('fats').value);
+        
+        // Calculate expected calories from macros
+        const calculatedCalories = (protein * 4) + (carbs * 4) + (fats * 9);
+        const difference = Math.abs(calories - calculatedCalories);
+        
+        if (difference > 50) {
+            if (!confirm(`Warning: The entered calories (${calories}) don't match the calculated calories from macros (${calculatedCalories.toFixed(1)}). The difference is ${difference.toFixed(1)} calories. Do you want to continue?`)) {
+                e.preventDefault();
+            }
+        }
+    });
+    
+    // Real-time calculation display
+    const inputs = ['calories', 'protein', 'carbs', 'fats'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', updateCalculations);
+    });
+});
+
+function updateCalculations() {
+    const calories = parseFloat(document.getElementById('calories').value) || 0;
+    const protein = parseFloat(document.getElementById('protein').value) || 0;
+    const carbs = parseFloat(document.getElementById('carbs').value) || 0;
+    const fats = parseFloat(document.getElementById('fats').value) || 0;
+    
+    if (calories > 0) {
+        const proteinPercent = ((protein * 4) / calories * 100).toFixed(1);
+        const carbsPercent = ((carbs * 4) / calories * 100).toFixed(1);
+        const fatsPercent = ((fats * 9) / calories * 100).toFixed(1);
+        
+        // Update progress bars
+        const proteinBar = document.querySelector('.progress-bar.bg-success');
+        const carbsBar = document.querySelector('.progress-bar.bg-warning');
+        const fatsBar = document.querySelector('.progress-bar.bg-info');
+        
+        if (proteinBar) {
+            proteinBar.style.width = proteinPercent + '%';
+            proteinBar.textContent = `Protein: ${proteinPercent}%`;
+        }
+        if (carbsBar) {
+            carbsBar.style.width = carbsPercent + '%';
+            carbsBar.textContent = `Carbs: ${carbsPercent}%`;
+        }
+        if (fatsBar) {
+            fatsBar.style.width = fatsPercent + '%';
+            fatsBar.textContent = `Fats: ${fatsPercent}%`;
+        }
+    }
+}
+</script>
+{% endblock %}

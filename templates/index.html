@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Calorie Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-chart-pie text-primary me-2"></i>
+            Nutrition Dashboard
+        </h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-fire fa-2x mb-2"></i>
+                <h5 class="card-title">Total Calories</h5>
+                <h3 class="card-text">{{ stats.total_calories }}</h3>
+                <small>kcal</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-dumbbell fa-2x mb-2"></i>
+                <h5 class="card-title">Total Protein</h5>
+                <h3 class="card-text">{{ stats.total_protein }}</h3>
+                <small>grams</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-bread-slice fa-2x mb-2"></i>
+                <h5 class="card-title">Total Carbs</h5>
+                <h3 class="card-text">{{ stats.total_carbs }}</h3>
+                <small>grams</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-cheese fa-2x mb-2"></i>
+                <h5 class="card-title">Total Fats</h5>
+                <h3 class="card-text">{{ stats.total_fats }}</h3>
+                <small>grams</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Daily Average Calories
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <h2 class="text-primary">{{ stats.average_daily_calories }}</h2>
+                <p class="text-muted">kcal per day</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-utensils me-2"></i>
+                    Total Meals
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <h2 class="text-success">{{ stats.total_meals }}</h2>
+                <p class="text-muted">meals recorded</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Macronutrient Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="macroChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="recentMeals">
+                    <p class="text-muted text-center">Loading recent meals...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <a href="{{ url_for('add_meal') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Add New Meal
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{{ url_for('meals') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-list me-2"></i>View All Meals
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <button class="btn btn-outline-success w-100" onclick="refreshStats()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts and load data
+    initializeMacroChart();
+    loadRecentMeals();
+});
+
+function initializeMacroChart() {
+    const ctx = document.getElementById('macroChart').getContext('2d');
+    const macroChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Protein', 'Carbs', 'Fats'],
+            datasets: [{
+                data: [
+                    {{ stats.total_protein * 4 }}, // Protein = 4 cal/g
+                    {{ stats.total_carbs * 4 }},   // Carbs = 4 cal/g
+                    {{ stats.total_fats * 9 }}     // Fats = 9 cal/g
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#ffc107',
+                    '#17a2b8'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function loadRecentMeals() {
+    fetch('/api/meals')
+        .then(response => response.json())
+        .then(meals => {
+            const recentMealsDiv = document.getElementById('recentMeals');
+            if (meals.length === 0) {
+                recentMealsDiv.innerHTML = '<p class="text-muted text-center">No meals recorded yet.</p>';
+                return;
+            }
+            
+            const recentMeals = meals.slice(-5).reverse(); // Get last 5 meals
+            let html = '<div class="list-group list-group-flush">';
+            
+            recentMeals.forEach(meal => {
+                html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">${meal.food_name}</h6>
+                            <small class="text-muted">${meal.meal_type} - ${meal.date}</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">${meal.calories} kcal</span>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            recentMealsDiv.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading recent meals:', error);
+            document.getElementById('recentMeals').innerHTML = 
+                '<p class="text-danger text-center">Error loading recent meals.</p>';
+        });
+}
+
+function refreshStats() {
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(stats => {
+            // Update the stats on the page
+            document.querySelector('.bg-primary .card-text').textContent = stats.total_calories;
+            document.querySelector('.bg-success .card-text').textContent = stats.total_protein;
+            document.querySelector('.bg-warning .card-text').textContent = stats.total_carbs;
+            document.querySelector('.bg-info .card-text').textContent = stats.total_fats;
+            document.querySelector('.text-primary').textContent = stats.average_daily_calories;
+            document.querySelector('.text-success').textContent = stats.total_meals;
+            
+            // Reinitialize the chart
+            initializeMacroChart();
+            loadRecentMeals();
+        })
+        .catch(error => {
+            console.error('Error refreshing stats:', error);
+        });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Meals - Calorie Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-utensils text-primary me-2"></i>
+                All Meals
+            </h1>
+            <a href="{{ url_for('add_meal') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add New Meal
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Meal History
+                        </h5>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search meals...">
+                            <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if meals %}
+                <div class="table-responsive">
+                    <table class="table table-hover" id="mealsTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Food Name</th>
+                                <th>Calories</th>
+                                <th>Protein</th>
+                                <th>Carbs</th>
+                                <th>Fats</th>
+                                <th>Date</th>
+                                <th>Meal Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for meal in meals %}
+                            <tr data-food-name="{{ meal.food_name.lower() }}" data-meal-type="{{ meal.meal_type.lower() }}">
+                                <td>
+                                    <strong>{{ meal.food_name }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ meal.calories }} kcal</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ meal.protein }}g</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">{{ meal.carbs }}g</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ meal.fats }}g</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ meal.date }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ meal.meal_type }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('edit_meal', meal_id=meal.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                onclick="deleteMeal('{{ meal.id }}', '{{ meal.food_name }}')"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <p class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Showing {{ meals|length }} meal{{ 's' if meals|length != 1 else '' }}
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="exportToCSV()">
+                            <i class="fas fa-download me-1"></i>Export to CSV
+                        </button>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No meals recorded yet</h4>
+                    <p class="text-muted">Start tracking your nutrition by adding your first meal!</p>
+                    <a href="{{ url_for('add_meal') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Your First Meal
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<span id="mealNameToDelete"></span>"?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize search functionality
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', filterMeals);
+});
+
+function filterMeals() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const table = document.getElementById('mealsTable');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    
+    for (let row of rows) {
+        const foodName = row.getAttribute('data-food-name');
+        const mealType = row.getAttribute('data-meal-type');
+        
+        if (foodName.includes(searchTerm) || mealType.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    }
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    filterMeals();
+}
+
+function deleteMeal(mealId, mealName) {
+    document.getElementById('mealNameToDelete').textContent = mealName;
+    document.getElementById('deleteForm').action = `/delete_meal/${mealId}`;
+    
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    deleteModal.show();
+}
+
+function exportToCSV() {
+    const table = document.getElementById('mealsTable');
+    const rows = table.getElementsByTagName('tr');
+    let csv = [];
+    
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const cols = row.querySelectorAll('td, th');
+        let rowData = [];
+        
+        for (let j = 0; j < cols.length - 1; j++) { // Exclude the Actions column
+            let text = cols[j].textContent.trim();
+            // Remove badge styling and extract clean text
+            text = text.replace(/kcal|g/g, '').trim();
+            rowData.push(`"${text}"`);
+        }
+        
+        csv.push(rowData.join(','));
+    }
+    
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'calorie_tracker_meals.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}
