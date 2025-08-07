@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1><i class="fas fa-utensils"></i> Calorie Tracker</h1>
+                <p>Track your daily nutrition intake</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="container">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </button>
+                <button class="nav-btn" data-tab="add-meal">
+                    <i class="fas fa-plus"></i> Add Meal
+                </button>
+                <button class="nav-btn" data-tab="meals">
+                    <i class="fas fa-list"></i> View Meals
+                </button>
+                <button class="nav-btn" data-tab="statistics">
+                    <i class="fas fa-chart-bar"></i> Statistics
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-fire"></i>
+                            <h3>Total Calories</h3>
+                            <span id="total-calories">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-dumbbell"></i>
+                            <h3>Total Protein</h3>
+                            <span id="total-protein">0g</span>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-bread-slice"></i>
+                            <h3>Total Carbs</h3>
+                            <span id="total-carbs">0g</span>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-oil-can"></i>
+                            <h3>Total Fats</h3>
+                            <span id="total-fats">0g</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-meals">
+                        <h2>Recent Meals</h2>
+                        <div id="recent-meals-list" class="meals-grid">
+                            <!-- Recent meals will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Meal Tab -->
+                <div id="add-meal" class="tab-content">
+                    <div class="form-container">
+                        <h2><i class="fas fa-plus"></i> Add New Meal</h2>
+                        <form id="meal-form" class="meal-form">
+                            <div class="form-group">
+                                <label for="food-name">
+                                    <i class="fas fa-utensils"></i> Food Name
+                                </label>
+                                <input type="text" id="food-name" name="food_name" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="calories">
+                                        <i class="fas fa-fire"></i> Calories
+                                    </label>
+                                    <input type="number" id="calories" name="calories" step="0.1" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="protein">
+                                        <i class="fas fa-dumbbell"></i> Protein (g)
+                                    </label>
+                                    <input type="number" id="protein" name="protein" step="0.1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="carbs">
+                                        <i class="fas fa-bread-slice"></i> Carbs (g)
+                                    </label>
+                                    <input type="number" id="carbs" name="carbs" step="0.1" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="fats">
+                                        <i class="fas fa-oil-can"></i> Fats (g)
+                                    </label>
+                                    <input type="number" id="fats" name="fats" step="0.1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="date">
+                                        <i class="fas fa-calendar"></i> Date
+                                    </label>
+                                    <input type="date" id="date" name="date" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="meal-type">
+                                        <i class="fas fa-clock"></i> Meal Type
+                                    </label>
+                                    <select id="meal-type" name="meal_type" required>
+                                        <option value="">Select meal type</option>
+                                        <option value="Breakfast">Breakfast</option>
+                                        <option value="Lunch">Lunch</option>
+                                        <option value="Dinner">Dinner</option>
+                                        <option value="Snack">Snack</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> Save Meal
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- View Meals Tab -->
+                <div id="meals" class="tab-content">
+                    <div class="meals-header">
+                        <h2><i class="fas fa-list"></i> Your Meals</h2>
+                        <div class="filters">
+                            <select id="filter-meal-type">
+                                <option value="">All Meal Types</option>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                            <input type="date" id="filter-date" placeholder="Filter by date">
+                        </div>
+                    </div>
+                    
+                    <div id="meals-list" class="meals-grid">
+                        <!-- Meals will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Statistics Tab -->
+                <div id="statistics" class="tab-content">
+                    <h2><i class="fas fa-chart-bar"></i> Nutrition Statistics</h2>
+                    <div id="stats-content" class="stats-container">
+                        <!-- Statistics will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Meal</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="edit-form" class="meal-form">
+                <input type="hidden" id="edit-meal-id">
+                <div class="form-group">
+                    <label for="edit-food-name">Food Name</label>
+                    <input type="text" id="edit-food-name" name="food_name" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-calories">Calories</label>
+                        <input type="number" id="edit-calories" name="calories" step="0.1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-protein">Protein (g)</label>
+                        <input type="number" id="edit-protein" name="protein" step="0.1" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-carbs">Carbs (g)</label>
+                        <input type="number" id="edit-carbs" name="carbs" step="0.1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-fats">Fats (g)</label>
+                        <input type="number" id="edit-fats" name="fats" step="0.1" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-date">Date</label>
+                        <input type="date" id="edit-date" name="date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-meal-type">Meal Type</label>
+                        <select id="edit-meal-type" name="meal_type" required>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                            <option value="Snack">Snack</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Update Meal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
