@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}View Meals - Calorie Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-list me-2"></i>View Meals</h1>
+            <a href="{{ url_for('add_meal') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add New Meal
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filters</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="meal_type" class="form-label">Meal Type</label>
+                        <select class="form-select" id="meal_type" name="meal_type">
+                            <option value="">All meal types</option>
+                            <option value="Breakfast" {% if filter_type == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+                            <option value="Lunch" {% if filter_type == 'Lunch' %}selected{% endif %}>Lunch</option>
+                            <option value="Dinner" {% if filter_type == 'Dinner' %}selected{% endif %}>Dinner</option>
+                            <option value="Snack" {% if filter_type == 'Snack' %}selected{% endif %}>Snack</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" value="{{ filter_date }}">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Filter
+                            </button>
+                            <a href="{{ url_for('view_meals') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Meals Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-utensils me-2"></i>Meals
+                    {% if meals %}
+                        <span class="badge bg-secondary ms-2">{{ meals|length }} meal{{ 's' if meals|length != 1 else '' }}</span>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if meals %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="mealsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Food Name</th>
+                                    <th>Calories</th>
+                                    <th>Protein</th>
+                                    <th>Carbs</th>
+                                    <th>Fats</th>
+                                    <th>Date</th>
+                                    <th>Meal Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for meal in meals %}
+                                <tr>
+                                    <td><code>{{ meal[0] }}</code></td>
+                                    <td><strong>{{ meal[1] }}</strong></td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ meal[2] }} kcal</span>
+                                    </td>
+                                    <td>{{ meal[3] }}g</td>
+                                    <td>{{ meal[4] }}g</td>
+                                    <td>{{ meal[5] }}g</td>
+                                    <td>{{ meal[6] }}</td>
+                                    <td>
+                                        {% if meal[7] == 'Breakfast' %}
+                                            <span class="badge bg-warning text-dark">{{ meal[7] }}</span>
+                                        {% elif meal[7] == 'Lunch' %}
+                                            <span class="badge bg-success">{{ meal[7] }}</span>
+                                        {% elif meal[7] == 'Dinner' %}
+                                            <span class="badge bg-info">{{ meal[7] }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ meal[7] }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('modify_meal', meal_id=meal[0]) }}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="Edit meal">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ url_for('delete_meal', meal_id=meal[0]) }}" 
+                                               class="btn btn-sm btn-outline-danger" 
+                                               onclick="return confirm('Are you sure you want to delete this meal?')"
+                                               title="Delete meal">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Summary -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-chart-pie me-2"></i>Summary for filtered results:</h6>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <strong>Total Calories:</strong> 
+                                        <span class="badge bg-primary">{{ meals|sum(attribute=2) }} kcal</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Total Protein:</strong> 
+                                        <span class="badge bg-success">{{ "%.1f"|format(meals|sum(attribute=3)) }}g</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Total Carbs:</strong> 
+                                        <span class="badge bg-warning text-dark">{{ "%.1f"|format(meals|sum(attribute=4)) }}g</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Total Fats:</strong> 
+                                        <span class="badge bg-info">{{ "%.1f"|format(meals|sum(attribute=5)) }}g</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">
+                            {% if filter_type or filter_date %}
+                                No meals found matching your filters
+                            {% else %}
+                                No meals recorded yet
+                            {% endif %}
+                        </h5>
+                        <p class="text-muted">
+                            {% if filter_type or filter_date %}
+                                Try adjusting your filters or 
+                            {% else %}
+                                Start tracking your nutrition by 
+                            {% endif %}
+                            <a href="{{ url_for('add_meal') }}">adding your first meal</a>.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add search functionality
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.className = 'form-control mb-3';
+    searchInput.placeholder = 'Search meals...';
+    searchInput.id = 'searchInput';
+    
+    const table = document.getElementById('mealsTable');
+    if (table) {
+        table.parentNode.insertBefore(searchInput, table);
+        
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
