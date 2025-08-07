@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnackShack - Calorie Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>SNACKSHACK</h1>
+            </div>
+            <div class="user-info">
+                <span class="welcome">Welcome back!</span>
+                <div class="date" id="current-date"></div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Daily Summary Cards -->
+            <div class="summary-cards">
+                <div class="card calories-card">
+                    <div class="card-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Calories Today</h3>
+                        <div class="calories-display">
+                            <span class="current-calories" id="current-calories">0</span>
+                            <span class="target-calories">/ 2000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="calories-progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card meals-card">
+                    <div class="card-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Meals Logged</h3>
+                        <div class="meals-count" id="meals-count">0</div>
+                        <div class="meals-text">meals today</div>
+                    </div>
+                </div>
+
+                <div class="card streak-card">
+                    <div class="card-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Current Streak</h3>
+                        <div class="streak-count" id="streak-count">1</div>
+                        <div class="streak-text">days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Food Section -->
+            <div class="add-food-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-plus-circle"></i> Add Food</h2>
+                </div>
+                
+                <form class="add-food-form" id="add-food-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="food-search">Search Food</label>
+                            <div class="search-container">
+                                <input type="text" id="food-search" placeholder="Enter food name..." autocomplete="off">
+                                <i class="fas fa-search search-icon"></i>
+                                <div class="search-results" id="search-results"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="serving-size">Serving Size</label>
+                            <input type="number" id="serving-size" value="1" min="0.1" step="0.1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="meal-type">Meal Type</label>
+                            <select id="meal-type">
+                                <option value="breakfast">Breakfast</option>
+                                <option value="lunch">Lunch</option>
+                                <option value="dinner">Dinner</option>
+                                <option value="snack">Snack</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="calories-preview" id="calories-preview" style="display: none;">
+                        <div class="preview-text">
+                            <span id="preview-food"></span> - <span id="preview-calories"></span> calories
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="add-btn" disabled id="add-btn">
+                        <i class="fas fa-plus"></i> Add to Log
+                    </button>
+                </form>
+            </div>
+
+            <!-- Food Log Section -->
+            <div class="food-log-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Today's Food Log</h2>
+                    <button class="clear-btn" id="clear-log-btn">
+                        <i class="fas fa-trash"></i> Clear Log
+                    </button>
+                </div>
+                
+                <div class="meal-categories">
+                    <div class="meal-category" id="breakfast-section">
+                        <h3><i class="fas fa-sun"></i> Breakfast</h3>
+                        <div class="meal-items" id="breakfast-items">
+                            <div class="empty-meal">No items logged</div>
+                        </div>
+                        <div class="meal-total">Total: <span id="breakfast-total">0</span> cal</div>
+                    </div>
+                    
+                    <div class="meal-category" id="lunch-section">
+                        <h3><i class="fas fa-cloud-sun"></i> Lunch</h3>
+                        <div class="meal-items" id="lunch-items">
+                            <div class="empty-meal">No items logged</div>
+                        </div>
+                        <div class="meal-total">Total: <span id="lunch-total">0</span> cal</div>
+                    </div>
+                    
+                    <div class="meal-category" id="dinner-section">
+                        <h3><i class="fas fa-moon"></i> Dinner</h3>
+                        <div class="meal-items" id="dinner-items">
+                            <div class="empty-meal">No items logged</div>
+                        </div>
+                        <div class="meal-total">Total: <span id="dinner-total">0</span> cal</div>
+                    </div>
+                    
+                    <div class="meal-category" id="snack-section">
+                        <h3><i class="fas fa-cookie-bite"></i> Snacks</h3>
+                        <div class="meal-items" id="snack-items">
+                            <div class="empty-meal">No items logged</div>
+                        </div>
+                        <div class="meal-total">Total: <span id="snack-total">0</span> cal</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
