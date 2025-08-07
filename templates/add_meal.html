@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Add Meal - Calorie Tracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-plus me-2"></i>Add New Meal
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="addMealForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="food_name" class="form-label">Food Name *</label>
+                            <input type="text" class="form-control" id="food_name" name="food_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="meal_type" class="form-label">Meal Type *</label>
+                            <select class="form-select" id="meal_type" name="meal_type" required>
+                                <option value="">Select meal type</option>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="calories" class="form-label">Calories (kcal) *</label>
+                            <input type="number" class="form-control" id="calories" name="calories" min="0" step="0.1" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="protein" class="form-label">Protein (g) *</label>
+                            <input type="number" class="form-control" id="protein" name="protein" min="0" step="0.1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="carbs" class="form-label">Carbohydrates (g) *</label>
+                            <input type="number" class="form-control" id="carbs" name="carbs" min="0" step="0.1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="fats" class="form-label">Fats (g) *</label>
+                            <input type="number" class="form-control" id="fats" name="fats" min="0" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Nutrition Facts:</strong> 
+                                <span id="nutritionInfo">Enter values to see nutrition breakdown</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Meal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set today's date as default
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    
+    // Calculate and display nutrition info
+    function updateNutritionInfo() {
+        const calories = parseFloat(document.getElementById('calories').value) || 0;
+        const protein = parseFloat(document.getElementById('protein').value) || 0;
+        const carbs = parseFloat(document.getElementById('carbs').value) || 0;
+        const fats = parseFloat(document.getElementById('fats').value) || 0;
+        
+        const calculatedCalories = (protein * 4) + (carbs * 4) + (fats * 9);
+        const difference = Math.abs(calories - calculatedCalories);
+        
+        let info = `Protein: ${protein}g (${(protein * 4).toFixed(0)} kcal), `;
+        info += `Carbs: ${carbs}g (${(carbs * 4).toFixed(0)} kcal), `;
+        info += `Fats: ${fats}g (${(fats * 9).toFixed(0)} kcal)`;
+        
+        if (calories > 0 && calculatedCalories > 0) {
+            if (difference < 10) {
+                info += ` - ✅ Calculated calories match (${calculatedCalories.toFixed(0)} kcal)`;
+            } else {
+                info += ` - ⚠️ Calculated: ${calculatedCalories.toFixed(0)} kcal (diff: ${difference.toFixed(0)} kcal)`;
+            }
+        }
+        
+        document.getElementById('nutritionInfo').textContent = info;
+    }
+    
+    // Add event listeners to nutrition inputs
+    ['calories', 'protein', 'carbs', 'fats'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateNutritionInfo);
+    });
+    
+    // Form validation
+    document.getElementById('addMealForm').addEventListener('submit', function(e) {
+        const calories = parseFloat(document.getElementById('calories').value);
+        const protein = parseFloat(document.getElementById('protein').value);
+        const carbs = parseFloat(document.getElementById('carbs').value);
+        const fats = parseFloat(document.getElementById('fats').value);
+        
+        if (calories < 0 || protein < 0 || carbs < 0 || fats < 0) {
+            e.preventDefault();
+            alert('Please enter valid positive numbers for all nutritional values.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}
