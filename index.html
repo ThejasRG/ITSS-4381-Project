@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnackStack - Gamify Your Nutrition</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo">🐍</div>
+                <h1 class="app-title">SNACKSTACK</h1>
+            </div>
+            <div class="daily-goal">
+                <span>Daily Goal Progress</span>
+                <div class="goal-percentage" id="goalPercentage">0%</div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Snake Visualization Section -->
+            <section class="snake-section">
+                <div class="city-background">
+                    <div class="buildings"></div>
+                    <div class="snake-container">
+                        <canvas id="snakeCanvas" width="800" height="300"></canvas>
+                        <div class="snake-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Snake Length</span>
+                                <span class="stat-value" id="snakeLength">1</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Nutrition Score</span>
+                                <span class="stat-value" id="nutritionScore">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Section -->
+            <section class="dashboard">
+                <div class="dashboard-grid">
+                    <!-- Quick Add Snack -->
+                    <div class="card quick-add-card">
+                        <h3>🍎 Quick Add Snack</h3>
+                        <form id="quickAddForm" class="quick-add-form">
+                            <select id="snackSelect" class="form-input">
+                                <option value="">Select a snack...</option>
+                                <option value="apple">🍎 Apple (80 cal)</option>
+                                <option value="banana">🍌 Banana (105 cal)</option>
+                                <option value="almonds">🥜 Almonds 1oz (160 cal)</option>
+                                <option value="yogurt">🥛 Greek Yogurt (100 cal)</option>
+                                <option value="carrots">🥕 Baby Carrots (35 cal)</option>
+                                <option value="granola">🥣 Granola Bar (140 cal)</option>
+                            </select>
+                            <button type="submit" class="btn-primary">Add Snack</button>
+                        </form>
+                    </div>
+
+                    <!-- Custom Snack Entry -->
+                    <div class="card custom-add-card">
+                        <h3>✏️ Custom Snack</h3>
+                        <form id="customAddForm" class="custom-add-form">
+                            <input type="text" id="customName" placeholder="Snack name" class="form-input" required>
+                            <div class="nutrition-inputs">
+                                <input type="number" id="customCalories" placeholder="Calories" class="form-input small" required>
+                                <input type="number" id="customProtein" placeholder="Protein (g)" class="form-input small">
+                                <input type="number" id="customCarbs" placeholder="Carbs (g)" class="form-input small">
+                                <input type="number" id="customFats" placeholder="Fats (g)" class="form-input small">
+                            </div>
+                            <button type="submit" class="btn-secondary">Add Custom Snack</button>
+                        </form>
+                    </div>
+
+                    <!-- Daily Progress -->
+                    <div class="card progress-card">
+                        <h3>📊 Daily Progress</h3>
+                        <div class="progress-bars">
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span>Calories</span>
+                                    <span id="caloriesProgress">0 / 2000</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill calories" id="caloriesFill"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span>Protein</span>
+                                    <span id="proteinProgress">0 / 150g</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill protein" id="proteinFill"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span>Carbs</span>
+                                    <span id="carbsProgress">0 / 250g</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill carbs" id="carbsFill"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span>Fats</span>
+                                    <span id="fatsProgress">0 / 67g</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill fats" id="fatsFill"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Snacks -->
+                    <div class="card snacks-log-card">
+                        <h3>🍽️ Today's Snacks</h3>
+                        <div class="snacks-list" id="snacksList">
+                            <div class="empty-state">
+                                <p>No snacks logged yet today.</p>
+                                <p>Add your first snack to start growing your snake! 🐍</p>
+                            </div>
+                        </div>
+                        <button id="clearDataBtn" class="btn-clear">Clear All Data</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>Created by <strong>Group 10</strong></p>
+                <p>ITSS 4381.5u1 Object-Oriented Programming with Python – Summer 2025</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
