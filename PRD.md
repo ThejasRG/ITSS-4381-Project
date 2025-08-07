@@ -7,7 +7,7 @@
 
 **Product Name:** SNACKSTACK Web
 **Version:** 1.0
-**Date:** December 2024
+**Date:** August 2025
 
 ### 2. Executive Summary
 
@@ -231,3 +231,4 @@ SNACKSTACK Web is a modern, user-friendly web application that enables users to 
 This should now paste straight into GitHub without breaking your heading structure.
 
 Do you want me to also make a **README.md** version that summarizes this PRD for your repo front page? That way people get the quick version right when they land on your GitHub project.
+
